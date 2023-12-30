@@ -1,0 +1,20 @@
+## react_blog_api
+
+### =========references===========
+-tutorials
+https://www.youtube.com/watch?v=OML9f6LXUUs&list=PLj-4DlPRT48lGpll2kC4wOsLj7SEV_lYu&index=2
+
+
+
+### features/actions
+
+
+
+### technologies used
+
+
+### completed tasks
+
+
+### pending tasks
+
