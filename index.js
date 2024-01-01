@@ -2,6 +2,8 @@ import express from "express";
 import "dotenv/config";
 import mongoose from "mongoose";
 import multer from "multer";
+import cors from "cors";
+import path from "path";
 
 import { authRoute } from "./routes/auth.js";
 import { userRoute } from "./routes/users.js";
@@ -10,9 +12,12 @@ import { categoryRoute } from "./routes/categories.js";
 
 const app = express();
 const port = process.env.SERVER_PORT || 5001;
+const __dirname = path.resolve();
 
 // middlewares
 app.use(express.json());
+app.use(cors());
+app.use("/images", express.static(path.join(__dirname, "/images")));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
