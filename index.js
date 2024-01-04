@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
+// multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "images");
@@ -30,6 +31,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// upload file
 app.post("/api/upload", upload.single("file"), (req, res) => {
   res.status(200).json("File has been uploaded");
 });
@@ -38,7 +40,9 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Db is connected!"))
-  .catch((error) => console.log(error));
+  .catch((error) => {
+    console.log("Db connection error: " + error);
+  });
 
 // routes
 app.use("/api/auth", authRoute);
