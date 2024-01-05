@@ -8,9 +8,9 @@ router.post("/", async (req, res) => {
   const newPost = new Post(req.body);
   try {
     const savedPost = await newPost.save();
-    res.status(200).json(savedPost);
+    res.status(200).json({ status: "success", message: "post created!", data: savedPost });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ status: "false", message: err.message, data: null });
   }
 });
 
@@ -27,9 +27,9 @@ router.put("/:id", async (req, res) => {
           },
           { new: true }
         );
-        res.status(200).json(updatedPost);
+        res.status(200).json({ status: "success", message: "updated successfully", data: updatedPost });
       } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({ status: "false", message: err.message, data: null });
       }
     } else {
       res.status(401).json("You can update only your post!");
@@ -45,10 +45,10 @@ router.delete("/:id", async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (post.username === req.body.username) {
       try {
-        await post.deleteOne();
-        res.status(200).json("Post has been deleted...");
+        const deletedPost = await post.deleteOne();
+        res.status(200).json({ status: "success", message: "deleted successfully", data: deletedPost });
       } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({ status: "false", message: err.message, data: null });
       }
     } else {
       res.status(401).json("You can delete only your post!");
@@ -58,13 +58,14 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-//GET POST
+//GET A POST
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    res.status(200).json(post);
+    const { updatedAt, __v, ...others } = post._doc;
+    res.status(200).json({ status: "success", message: "post returned successfully!", data: others });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ status: "false", message: err.message, data: null });
   }
 });
 
@@ -72,8 +73,8 @@ router.get("/:id", async (req, res) => {
 router.get("/", async (req, res) => {
   const username = req.query.user;
   const catName = req.query.cat;
+  let posts;
   try {
-    let posts;
     if (username) {
       posts = await Post.find({ username });
     } else if (catName) {
@@ -85,9 +86,19 @@ router.get("/", async (req, res) => {
     } else {
       posts = await Post.find();
     }
-    res.status(200).json(posts);
+    // TODO: NOTE: as we want to skip some fields
+    posts = posts.map((post) => {
+      const { updatedAt, __v, ...others } = post._doc;
+      return others;
+    });
+    res.status(200).json({
+      status: "success",
+      result: posts.length,
+      message: "posts returned successfully!",
+      data: posts,
+    });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ status: "false", message: err.message, data: null });
   }
 });
 
