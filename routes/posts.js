@@ -62,6 +62,7 @@ router.delete("/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
+    if (!post) throw new Error("No post found with this id");
     const { updatedAt, __v, ...others } = post._doc;
     res.status(200).json({ status: "success", message: "post returned successfully!", data: others });
   } catch (err) {
